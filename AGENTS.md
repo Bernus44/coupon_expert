@@ -8,6 +8,9 @@ A Python + Playwright scraper that extracts MLB "Total Runs" / "Total Hits" bett
 
 ## Cursor Cloud specific instructions
 
+- **Langue de communication :** répondre toujours en français (réflexions, résultats, messages,
+  descriptions de PR, etc.). Seul le code peut rester dans la langue technique requise
+  (identifiants, commentaires déjà en anglais, etc.).
 - Dependencies: `playwright`, `playwright-stealth` (see `requirements.txt`). The startup update script
   installs these plus the Chromium browser (`playwright install --with-deps chromium`). Browsers live in
   `~/.cache/ms-playwright`.
