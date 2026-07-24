@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+block_detected.png
+captcha_*.png
+*.png
+data/analysis_report.json
+data/qualified_events.json
+data/recommended_combines.json
+data/recommended_combines.txt

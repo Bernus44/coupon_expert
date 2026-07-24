@@ -1,0 +1,58 @@
+# Coupon Expert — MLB Betclic Value Combinés
+
+Scraper + moteur d’analyse pour proposer des **combinés MLB** dont la probabilité estimée de réalisation est **≥ 60%**, avec un filtre de **valeur attendue (EV ≥ 0)** pour viser le profit.
+
+## Pipeline
+
+1. **Scrape Betclic** (`betclic_mlb_scraper.py`) — marchés *Total Runs* / *Total Hits* (cotes ≥ 1.20)
+2. **Enrichissement MLB** (API publique `statsapi.mlb.com` + blessures ESPN)
+   - historique des confrontations (H2H)
+   - forme récente (attaque / défense, 10 derniers matchs)
+   - posture domicile / extérieur (splits)
+   - classement & enjeu (course division / wild-card)
+   - état des joueurs (IL roster + feed blessures)
+   - conditions des anciennes confrontations (totaux runs/hits, venue, day/night)
+3. **Modèle de probabilité** — Poisson sur total attendu, blendé avec la cote marché (devig), ajustements forme / H2H / blessures / enjeu
+4. **Combinés** — 1 jambe par match, P(événement) ≥ 60%, P(joint) ≥ 60%, EV ≥ 0
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+playwright install chromium
+```
+
+## Usage
+
+```bash
+# Analyse à partir des cotes déjà scrapées
+python main.py
+
+# Force un nouveau scrape puis analyse
+python main.py --scrape -v
+
+# Seuil personnalisé
+python main.py --min-prob 0.60 --min-joint-prob 0.60 --max-legs 3
+```
+
+Sorties dans `data/` :
+
+| Fichier | Contenu |
+|---|---|
+| `betclic_mlb.json` | Cotes scrapées |
+| `qualified_events.json` | Événements ≥ 60% & EV+ |
+| `recommended_combines.json` | Combinés proposés |
+| `recommended_combines.txt` | Résumé lisible |
+| `analysis_report.json` | Rapport complet (contexte enrichi) |
+
+## Outils utilisés
+
+- **Playwright + playwright-stealth** — scrape Betclic anti-bot
+- **MLB Stats API** (`statsapi.mlb.com`) — standings, stats, schedule, H2H, roster IL
+- **ESPN site API** — blessures
+- **Python stdlib + requests** — orchestration
+- Pas de MCP GitHub disponible dans cet environnement cloud ; recherche d’écosystème via `gh` / docs publiques (wrapper de référence : [toddrob99/MLB-StatsAPI](https://github.com/toddrob99/MLB-StatsAPI))
+
+## Limites (importante)
+
+Les probabilités sont des **estimations de modèle**, pas des certitudes. Un EV+ historique n’implique pas un gain garanti. Jouer responsablement ; ce projet est un outil d’aide à la décision, pas un conseil financier.
