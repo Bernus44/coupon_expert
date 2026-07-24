@@ -17,22 +17,36 @@ Scraper + moteur d’analyse pour proposer des **combinés MLB** dont la probabi
 
 ## Installation
 
+Sur cet environnement cloud, la commande s’appelle `python3` (pas `python`), et les binaires installés via pip (`playwright`) sont souvent hors `PATH`. Utilise plutôt :
+
 ```bash
-pip install -r requirements.txt
-playwright install chromium
+# Option A — script tout-en-un
+bash scripts/setup.sh
+
+# Option B — commandes manuelles (recommandées)
+python3 -m pip install --user -r requirements.txt
+python3 -m playwright install chromium
+```
+
+Si tu tiens à appeler `playwright` / `python` directement :
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+# (optionnel) alias python=python3
 ```
 
 ## Usage
 
 ```bash
 # Analyse à partir des cotes déjà scrapées
-python main.py
+python3 main.py
+# ou : bash scripts/run.sh
 
 # Force un nouveau scrape puis analyse
-python main.py --scrape -v
+python3 main.py --scrape -v
 
 # Seuil personnalisé
-python main.py --min-prob 0.60 --min-joint-prob 0.60 --max-legs 3
+python3 main.py --min-prob 0.60 --min-joint-prob 0.60 --max-legs 3
 ```
 
 Sorties dans `data/` :
