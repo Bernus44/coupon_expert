@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from .combiner import CombineTicket, build_combines, summarize_for_display
+from .combiner import build_combines, summarize_for_display
 from .enricher import MatchEnricher
 from .mlb_client import MLBClient
 from .probability import ScoredEvent, score_markets
@@ -19,33 +18,160 @@ logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ODDS_PATH = ROOT / "data" / "betclic_mlb.json"
 DEFAULT_OUT_DIR = ROOT / "data"
+DEFAULT_MAX_AGE_HOURS = 6.0
 
 
 def load_odds(path: Path) -> list[dict[str, Any]]:
     with path.open(encoding="utf-8") as f:
         data = json.load(f)
-    if not isinstance(data, list):
+    if isinstance(data, dict) and "matches" in data:
+        matches = data["matches"]
+    else:
+        matches = data
+    if not isinstance(matches, list):
         raise ValueError(f"Format inattendu dans {path}: liste attendue")
-    return data
+    return matches
 
 
-async def maybe_scrape(force: bool = False, odds_path: Path = DEFAULT_ODDS_PATH) -> Path:
-    """Run Betclic scraper when forced or when odds file is missing."""
-    if odds_path.exists() and not force:
-        logger.info("Réutilisation des cotes existantes: %s", odds_path)
+def _parse_iso(value: Optional[str]) -> Optional[datetime]:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def odds_freshness(
+    path: Path,
+    max_age_hours: float = DEFAULT_MAX_AGE_HOURS,
+) -> tuple[bool, str]:
+    """
+    Return (is_fresh, reason).
+    Stale when missing, too old on disk, or all match kickoffs are before today (UTC).
+    """
+    if not path.exists():
+        return False, "fichier de cotes absent"
+
+    now = datetime.now(timezone.utc)
+    age_h = (now.timestamp() - path.stat().st_mtime) / 3600.0
+    if age_h > max_age_hours:
+        return False, f"fichier âgé de {age_h:.1f}h (> {max_age_hours:.0f}h)"
+
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return False, f"JSON illisible ({exc})"
+
+    scraped_at = None
+    if isinstance(raw, dict):
+        scraped_at = _parse_iso(raw.get("scraped_at"))
+        matches = raw.get("matches") or []
+    else:
+        matches = raw if isinstance(raw, list) else []
+
+    if scraped_at:
+        age_scrape = (now - scraped_at).total_seconds() / 3600.0
+        if age_scrape > max_age_hours:
+            return False, f"dernier scrape il y a {age_scrape:.1f}h"
+
+    kickoffs: list[datetime] = []
+    for row in matches:
+        dt = _parse_iso(row.get("date_heure")) or _parse_iso(row.get("scraped_at"))
+        if dt:
+            kickoffs.append(dt.astimezone(timezone.utc))
+
+    if not matches:
+        return False, "aucun match dans le fichier"
+
+    if kickoffs:
+        newest = max(kickoffs)
+        if newest.date() < now.date():
+            return (
+                False,
+                "matchs obsolètes (plus récent: "
+                f"{newest.date().isoformat()}, aujourd'hui: {now.date().isoformat()})",
+            )
+
+    return True, f"cotes OK ({len(matches)} matchs, âge fichier {age_h:.1f}h)"
+
+
+async def maybe_scrape(
+    force: bool = False,
+    odds_path: Path = DEFAULT_ODDS_PATH,
+    max_age_hours: float = DEFAULT_MAX_AGE_HOURS,
+    cached_only: bool = False,
+) -> Path:
+    """Run Betclic scraper when forced/missing/stale; fallback ESPN if Betclic blocked."""
+    fresh, reason = odds_freshness(odds_path, max_age_hours=max_age_hours)
+
+    if cached_only:
+        if not odds_path.exists():
+            raise FileNotFoundError(
+                f"Aucune cote en cache ({odds_path}). Relance sans --cached."
+            )
+        if not fresh:
+            logger.warning("Mode --cached: utilisation de cotes NON à jour (%s)", reason)
+        else:
+            logger.info("Mode --cached: %s", reason)
         return odds_path
 
-    logger.info("Lancement du scraper Betclic MLB…")
-    # Lazy import: Playwright may be heavy / optional for analyze-only runs
+    need_scrape = force or not fresh
+    if not need_scrape:
+        logger.info("Réutilisation des cotes à jour: %s", reason)
+        return odds_path
+
+    if force:
+        logger.info("Scrape forcé (--scrape).")
+    else:
+        logger.info("Cotes pas à jour (%s) → nouveau scrape…", reason)
+
+    betclic_ok = await _try_betclic_scrape(odds_path)
+    fresh_after, reason_after = odds_freshness(odds_path, max_age_hours=max_age_hours)
+    if betclic_ok and fresh_after:
+        logger.info("Scrape Betclic OK: %s", reason_after)
+        return odds_path
+
+    logger.warning(
+        "Betclic indisponible ou obsolète (%s). Fallback ESPN/DraftKings pour la slate du jour…",
+        reason_after if odds_path.exists() else "fichier absent",
+    )
+    from .odds_providers import ESPNOddsProvider
+
+    provider = ESPNOddsProvider()
+    matches = provider.fetch_slate(days=2)
+    if not matches:
+        raise RuntimeError(
+            "Impossible de récupérer des matchs à jour (Betclic bloqué et ESPN vide)."
+        )
+    provider.save(matches, odds_path)
+    fresh_espn, reason_espn = odds_freshness(odds_path, max_age_hours=max_age_hours)
+    logger.info("Fallback ESPN enregistré: %s", reason_espn)
+    if not fresh_espn:
+        logger.warning("Les cotes ESPN semblent encore douteuses (%s)", reason_espn)
+    return odds_path
+
+
+async def _try_betclic_scrape(odds_path: Path) -> bool:
     import sys
 
     sys.path.insert(0, str(ROOT))
-    from betclic_mlb_scraper import BetclicMLBScraper
+    try:
+        from betclic_mlb_scraper import BetclicMLBScraper
 
-    scraper = BetclicMLBScraper()
-    await scraper.run()
-    return odds_path
+        scraper = BetclicMLBScraper()
+        await scraper.run()
+    except Exception as exc:
+        logger.error("Échec scrape Betclic: %s", exc)
+        return False
 
+    if not odds_path.exists():
+        return False
+    try:
+        matches = load_odds(odds_path)
+    except Exception:
+        return False
+    return bool(matches)
 
 def analyze_odds(
     odds: list[dict[str, Any]],
@@ -107,7 +233,6 @@ def save_report(report: dict[str, Any], out_dir: Path = DEFAULT_OUT_DIR) -> dict
     events_path = out_dir / "qualified_events.json"
     text_path = out_dir / "recommended_combines.txt"
 
-    # Full dump can be large (enriched); keep it
     with full_path.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
@@ -143,13 +268,24 @@ async def run_pipeline(
     min_prob: float = 0.60,
     min_joint_prob: float = 0.60,
     max_legs: int = 4,
+    max_age_hours: float = DEFAULT_MAX_AGE_HOURS,
+    cached_only: bool = False,
 ) -> dict[str, Any]:
-    path = await maybe_scrape(force=scrape, odds_path=odds_path)
+    path = await maybe_scrape(
+        force=scrape,
+        odds_path=odds_path,
+        max_age_hours=max_age_hours,
+        cached_only=cached_only,
+    )
     if not path.exists():
         raise FileNotFoundError(
             f"Aucune cote trouvée ({path}). Lance avec --scrape ou fournis data/betclic_mlb.json"
         )
     odds = load_odds(path)
+    logger.info("Analyse de %d matchs scrapés…", len(odds))
+    for row in odds:
+        logger.info("  · %s | %s", row.get("date_heure"), row.get("match"))
+
     report = analyze_odds(
         odds,
         min_prob=min_prob,

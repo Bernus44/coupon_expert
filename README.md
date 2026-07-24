@@ -38,15 +38,14 @@ export PATH="$HOME/.local/bin:$PATH"
 ## Usage
 
 ```bash
-# Analyse à partir des cotes déjà scrapées
+# Analyse — rescrape AUTO si les cotes ne sont pas à jour (recommandé)
 python3 main.py
-# ou : bash scripts/run.sh
 
-# Force un nouveau scrape puis analyse
+# Force un nouveau scrape même si le cache est récent
 python3 main.py --scrape -v
 
-# Seuil personnalisé
-python3 main.py --min-prob 0.60 --min-joint-prob 0.60 --max-legs 3
+# Utiliser uniquement le cache local (même obsolète)
+python3 main.py --cached
 ```
 
 Sorties dans `data/` :
@@ -62,10 +61,10 @@ Sorties dans `data/` :
 ## Outils utilisés
 
 - **Playwright + playwright-stealth** — scrape Betclic anti-bot
+- **Fallback ESPN / DraftKings** — si Betclic renvoie 403, récupère automatiquement la slate MLB du jour + totaux Runs
 - **MLB Stats API** (`statsapi.mlb.com`) — standings, stats, schedule, H2H, roster IL
-- **ESPN site API** — blessures
+- **ESPN site API** — blessures + scoreboard/odds
 - **Python stdlib + requests** — orchestration
-- Pas de MCP GitHub disponible dans cet environnement cloud ; recherche d’écosystème via `gh` / docs publiques (wrapper de référence : [toddrob99/MLB-StatsAPI](https://github.com/toddrob99/MLB-StatsAPI))
 
 ## Limites (importante)
 

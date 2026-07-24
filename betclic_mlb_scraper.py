@@ -4,7 +4,7 @@ import logging
 import os
 import random
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from playwright.async_api import async_playwright
 from playwright_stealth import Stealth
 
@@ -314,8 +314,17 @@ class BetclicMLBScraper:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             context = await browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-                viewport={'width': 1280, 'height': 800}
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/125.0.0.0 Safari/537.36"
+                ),
+                viewport={"width": 1280, "height": 800},
+                locale="fr-FR",
+                timezone_id="Europe/Paris",
+                extra_http_headers={
+                    "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+                },
             )
             page = await context.new_page()
             await Stealth().apply_stealth_async(page)
@@ -328,10 +337,30 @@ class BetclicMLBScraper:
                         self.data.append(match_data)
 
                 os.makedirs("data", exist_ok=True)
-                with open("data/betclic_mlb.json", "w", encoding="utf-8") as f:
-                    json.dump(self.data, f, indent=2, ensure_ascii=False)
+                scraped_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                if not self.data:
+                    logger.error(
+                        "Aucun match extrait (blocage probable). "
+                        "Le fichier data/betclic_mlb.json n'est PAS écrasé."
+                    )
+                else:
+                    for row in self.data:
+                        row["scraped_at"] = scraped_at
+                        row.setdefault("source", "betclic")
+                    payload = {
+                        "scraped_at": scraped_at,
+                        "source": self.mlb_url,
+                        "match_count": len(self.data),
+                        "matches": self.data,
+                    }
+                    with open("data/betclic_mlb.json", "w", encoding="utf-8") as f:
+                        json.dump(payload, f, indent=2, ensure_ascii=False)
 
-                logger.info(f"Extraction terminée. {len(self.data)} matchs enregistrés dans data/betclic_mlb.json")
+                    logger.info(
+                        "Extraction terminée. %s matchs enregistrés dans data/betclic_mlb.json (scraped_at=%s)",
+                        len(self.data),
+                        scraped_at,
+                    )
 
             except Exception as e:
                 logger.error(f"Erreur globale : {e}")

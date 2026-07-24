@@ -134,3 +134,10 @@ def test_build_combines_joint_threshold():
     assert tickets
     assert all(t.joint_probability >= 0.60 - 1e-9 for t in tickets)
     assert all(t.expected_value >= -1e-9 for t in tickets)
+
+
+def test_american_to_decimal():
+    from mlb_engine.odds_providers import american_to_decimal
+
+    assert abs(american_to_decimal(-110) - 1.909) < 0.01
+    assert abs(american_to_decimal(150) - 2.5) < 1e-9

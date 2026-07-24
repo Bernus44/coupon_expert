@@ -9,7 +9,12 @@ import logging
 import sys
 from pathlib import Path
 
-from mlb_engine.pipeline import DEFAULT_ODDS_PATH, DEFAULT_OUT_DIR, run_pipeline
+from mlb_engine.pipeline import (
+    DEFAULT_MAX_AGE_HOURS,
+    DEFAULT_ODDS_PATH,
+    DEFAULT_OUT_DIR,
+    run_pipeline,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -17,13 +22,25 @@ def build_parser() -> argparse.ArgumentParser:
         description=(
             "Scrape les cotes MLB Betclic, enrichit avec stats MLB "
             "(forme, H2H, domicile/extérieur, classement, blessures, enjeu) "
-            "et propose des combinés à probabilité estimée ≥ 60% orientés profit (EV+)."
+            "et propose des combinés à probabilité estimée ≥ 60% orientés profit (EV+). "
+            "Par défaut, rescrape automatiquement si les cotes ne sont pas à jour."
         )
     )
     p.add_argument(
         "--scrape",
         action="store_true",
         help="Force un nouveau scrape Betclic avant l'analyse",
+    )
+    p.add_argument(
+        "--cached",
+        action="store_true",
+        help="N'utilise que le cache local (pas de scrape, même si obsolète)",
+    )
+    p.add_argument(
+        "--max-age-hours",
+        type=float,
+        default=DEFAULT_MAX_AGE_HOURS,
+        help=f"Âge max des cotes avant refresh auto (défaut {DEFAULT_MAX_AGE_HOURS})",
     )
     p.add_argument(
         "--odds",
@@ -70,6 +87,9 @@ def main(argv: list[str] | None = None) -> int:
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="[%(levelname)s] %(message)s",
     )
+    if args.scrape and args.cached:
+        logging.error("Options incompatibles: --scrape et --cached")
+        return 2
     try:
         asyncio.run(
             run_pipeline(
@@ -79,6 +99,8 @@ def main(argv: list[str] | None = None) -> int:
                 min_prob=args.min_prob,
                 min_joint_prob=args.min_joint_prob,
                 max_legs=args.max_legs,
+                max_age_hours=args.max_age_hours,
+                cached_only=args.cached,
             )
         )
     except Exception as exc:
