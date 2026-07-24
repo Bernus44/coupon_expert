@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from mlb_engine.combiner import build_combines
 from mlb_engine.enricher import parse_market_option
-from mlb_engine.probability import ScoredEvent, implied_prob, poisson_over_under, score_markets
+from mlb_engine.probability import (
+    ScoredEvent,
+    implied_prob,
+    pick_best_per_match,
+    poisson_over_under,
+    score_markets,
+)
 from mlb_engine.teams import parse_matchup, resolve_team
 
 
@@ -58,86 +64,113 @@ def test_implied_prob():
     assert abs(implied_prob(2.0) - 0.5) < 1e-9
 
 
-def test_score_markets_filters_low_prob():
-    enriched = {
-        "match": "Texas Rangers vs Cleveland Guardians",
-        "date_heure": "2026-07-24T23:00:00Z",
-        "away": {
-            "name": "Texas Rangers",
-            "injury_count": 2,
-            "il_roster": {"il": 1},
-            "form_last10": {
-                "games": 10,
-                "runs_scored_pg": 3.0,
-                "hits_pg": 7.0,
-            },
-            "season_rates": {"home": {"era": 4.0}, "away": {"era": 4.1}},
-            "standings": {"division_rank": 2},
-        },
-        "home": {
-            "name": "Cleveland Guardians",
-            "injury_count": 1,
-            "il_roster": {"il": 1},
-            "form_last10": {
-                "games": 10,
-                "runs_scored_pg": 3.2,
-                "hits_pg": 7.2,
-            },
-            "season_rates": {"home": {"era": 3.2}, "away": {"era": 3.5}},
-            "standings": {"division_rank": 1},
-        },
-        "enjeu": {"combined": 0.8},
-        "h2h": {"meetings": 6, "avg_total_runs": 6.5, "avg_total_hits": 14.0},
-        "posture": {"venue": "Progressive Field"},
-        "model_priors": {"expected_total_runs": 7.0, "expected_total_hits": 14.5},
-        "markets": [
-            {"type": "Total Runs", "option": "- de 10,5", "cote": 1.35, "side": "under", "line": 10.5},
-            {"type": "Total Runs", "option": "+ de 10,5", "cote": 3.10, "side": "over", "line": 10.5},
-            {"type": "Total Runs", "option": "- de 5,5", "cote": 2.20, "side": "under", "line": 5.5},
-        ],
-    }
-    events = score_markets(enriched, min_prob=0.60)
-    assert events
-    assert all(e.blended_prob >= 0.60 for e in events)
-    assert all(e.expected_value >= -0.01 for e in events)
-    # Soft under on a high line should dominate
-    assert events[0].side == "under"
-
-
-def test_build_combines_joint_threshold():
-    def ev(match, p, cote, option="x"):
-        return ScoredEvent(
-            match=match,
-            date_heure=None,
-            market_type="Total Runs",
-            option=option,
-            side="under",
-            line=8.5,
-            cote=cote,
-            model_prob=p,
-            market_prob=1 / cote,
-            blended_prob=p,
-            edge=0.05,
-            expected_value=p * cote - 1,
-            confidence=0.7,
-            reasons=[],
-            context={},
-        )
-
-    events = [
-        ev("A vs B", 0.72, 1.40),
-        ev("C vs D", 0.70, 1.45),
-        ev("E vs F", 0.68, 1.50),
-        ev("G vs H", 0.55, 1.90),  # filtered by builder pool rule via blended>=0.60 in build
-    ]
-    tickets = build_combines(events, min_joint_prob=0.60, max_legs=3, top_n_tickets=10)
-    assert tickets
-    assert all(t.joint_probability >= 0.60 - 1e-9 for t in tickets)
-    assert all(t.expected_value >= -1e-9 for t in tickets)
-
-
 def test_american_to_decimal():
     from mlb_engine.odds_providers import american_to_decimal
 
     assert abs(american_to_decimal(-110) - 1.909) < 0.01
     assert abs(american_to_decimal(150) - 2.5) < 1e-9
+
+
+def _enriched_high_scoring():
+    return {
+        "match": "Chicago Cubs vs Pittsburgh Pirates",
+        "date_heure": "2026-07-24T22:40:00Z",
+        "away": {
+            "name": "Chicago Cubs",
+            "injury_count": 2,
+            "il_roster": {"il": 1},
+            "form_last10": {
+                "games": 10,
+                "runs_scored_pg": 6.0,
+                "runs_allowed_pg": 5.5,
+                "hits_pg": 10.0,
+                "hits_allowed_pg": 9.5,
+            },
+            "season_rates": {"home": {"era": 4.5}, "away": {"era": 4.8}},
+            "standings": {"division_rank": 2},
+        },
+        "home": {
+            "name": "Pittsburgh Pirates",
+            "injury_count": 1,
+            "il_roster": {"il": 1},
+            "form_last10": {
+                "games": 10,
+                "runs_scored_pg": 5.5,
+                "runs_allowed_pg": 5.8,
+                "hits_pg": 9.5,
+                "hits_allowed_pg": 10.0,
+            },
+            "season_rates": {"home": {"era": 4.6}, "away": {"era": 4.4}},
+            "standings": {"division_rank": 3},
+        },
+        "enjeu": {"combined": 0.4},
+        "h2h": {"meetings": 6, "avg_total_runs": 10.5, "avg_total_hits": 18.0},
+        "posture": {"venue": "PNC Park"},
+        "model_priors": {"expected_total_runs": 10.2, "expected_total_hits": 17.5},
+        "markets": [
+            {"type": "Total Runs", "option": "+ de 8,0", "cote": 1.90, "side": "over", "line": 8.0},
+            {"type": "Total Runs", "option": "- de 8,0", "cote": 1.90, "side": "under", "line": 8.0},
+        ],
+    }
+
+
+def test_score_markets_prefers_over_when_lambda_high():
+    events = score_markets(_enriched_high_scoring(), min_prob=0.55)
+    assert events
+    assert any(e.side == "over" for e in events)
+    best = pick_best_per_match(events)[0]
+    assert best.side == "over"
+    assert best.blended_prob >= 0.55
+
+
+def test_score_markets_prefers_under_when_lambda_low():
+    enriched = _enriched_high_scoring()
+    enriched["model_priors"]["expected_total_runs"] = 6.2
+    enriched["h2h"]["avg_total_runs"] = 6.0
+    enriched["away"]["form_last10"]["runs_scored_pg"] = 2.5
+    enriched["home"]["form_last10"]["runs_scored_pg"] = 2.8
+    enriched["markets"] = [
+        {"type": "Total Runs", "option": "+ de 8,5", "cote": 1.90, "side": "over", "line": 8.5},
+        {"type": "Total Runs", "option": "- de 8,5", "cote": 1.90, "side": "under", "line": 8.5},
+    ]
+    events = score_markets(enriched, min_prob=0.55)
+    assert events
+    best = pick_best_per_match(events)[0]
+    assert best.side == "under"
+
+
+def test_build_combines_joint_threshold():
+    def ev(match, p, cote, side="under", option="x"):
+        return ScoredEvent(
+            match=match,
+            date_heure=None,
+            market_type="Total Runs",
+            option=option,
+            side=side,
+            line=8.5,
+            cote=cote,
+            model_prob=p,
+            market_prob=1 / cote,
+            blended_prob=p,
+            realization_score=p,
+            edge=0.05,
+            expected_value=p * cote - 1,
+            confidence=0.7,
+            reasons=[],
+            criteria={},
+            context={},
+        )
+
+    events = [
+        ev("A vs B", 0.72, 1.40, side="over", option="+ de 7,5"),
+        ev("C vs D", 0.70, 1.45, side="under", option="- de 8,5"),
+        ev("E vs F", 0.68, 1.50, side="over", option="+ de 8,5"),
+        ev("G vs H", 0.55, 1.90),
+    ]
+    tickets = build_combines(events, min_joint_prob=0.60, max_legs=3, top_n_tickets=10)
+    assert tickets
+    assert all(t.joint_probability >= 0.60 - 1e-9 for t in tickets)
+    # Card should mix sides when best picks differ
+    card = next(t for t in tickets if t.strategy == "singles_card")
+    sides = {leg.side for leg in card.legs}
+    assert "over" in sides

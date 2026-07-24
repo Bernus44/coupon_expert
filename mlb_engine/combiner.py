@@ -6,7 +6,7 @@ import itertools
 from dataclasses import dataclass
 from typing import Any
 
-from .probability import ScoredEvent
+from .probability import ScoredEvent, pick_best_per_match
 
 
 @dataclass
@@ -48,20 +48,8 @@ def _ticket_key(ticket: CombineTicket) -> tuple:
 
 
 def _dedupe_per_match(events: list[ScoredEvent]) -> list[ScoredEvent]:
-    """Keep the best EV event per match to avoid correlated same-game legs."""
-    best: dict[str, ScoredEvent] = {}
-    for ev in events:
-        cur = best.get(ev.match)
-        if cur is None or (ev.expected_value, ev.blended_prob) > (
-            cur.expected_value,
-            cur.blended_prob,
-        ):
-            best[ev.match] = ev
-    return sorted(
-        best.values(),
-        key=lambda e: (e.expected_value, e.blended_prob),
-        reverse=True,
-    )
+    """Keep the most realizable event per match (PLUS or MOINS)."""
+    return pick_best_per_match(events)
 
 
 def build_combines(
@@ -71,43 +59,64 @@ def build_combines(
     top_n_tickets: int = 5,
 ) -> list[CombineTicket]:
     """
-    Propose combinés whose estimated joint realization probability stays >= min_joint_prob,
-    while maximizing expected value (profit objective).
+    Propose tickets from events with P >= 60%.
 
-    Constraints:
-    - one leg per match (independence approximation)
-    - each leg already filtered at >= 60% blended probability upstream
+    Per match we keep only the side (plus/moins) with the best realization score.
     """
-    pool = _dedupe_per_match(
-        [e for e in events if e.blended_prob >= 0.60 and e.expected_value >= -0.01]
-    )
+    pool = _dedupe_per_match([e for e in events if e.blended_prob >= 0.60])
     if not pool:
         return []
 
     collected: list[CombineTicket] = []
 
-    # Card of independent singles (mise séparée) — often better for long-term profit than parlays
-    card = sorted(pool, key=lambda e: (e.expected_value, e.blended_prob), reverse=True)[: max_legs]
+    card = sorted(
+        pool,
+        key=lambda e: (e.realization_score, e.blended_prob, e.expected_value),
+        reverse=True,
+    )[:max_legs]
     if card:
         avg_p = sum(e.blended_prob for e in card) / len(card)
         avg_ev = sum(e.expected_value for e in card) / len(card)
+        n_over = sum(1 for e in card if e.side == "over")
+        n_under = len(card) - n_over
         collected.append(
             CombineTicket(
                 legs=card,
-                joint_probability=avg_p,  # mean hit-rate of the card, NOT a parlay joint
+                joint_probability=avg_p,
                 combined_odds=sum(e.cote for e in card) / len(card),
                 expected_value=avg_ev,
                 strategy="singles_card",
                 notes=[
-                    "Carte de paris SIMPLES (1 mise par événement) — recommandé pour le profit long terme.",
-                    f"Chaque jambe a P≥60%. Taux de réussite moyen estimé={avg_p:.1%}, EV moyen={avg_ev:+.1%}.",
-                    "Ce n'est PAS un combiné multiplicatif: les cotes ne se multiplient pas.",
+                    "Carte des événements les plus susceptibles d'être réalisés (PLUS ou MOINS).",
+                    f"Mix: {n_over}× PLUS de / {n_under}× MOINS de — "
+                    f"P moy.={avg_p:.1%}, EV moy.={avg_ev:+.1%}.",
+                    "Paris SIMPLES (1 mise par événement), pas un combiné multiplicatif.",
+                ],
+            )
+        )
+
+    best_real = max(pool, key=lambda e: (e.realization_score, e.blended_prob))
+    if best_real.blended_prob >= min_joint_prob:
+        collected.append(
+            CombineTicket(
+                legs=[best_real],
+                joint_probability=best_real.blended_prob,
+                combined_odds=best_real.cote,
+                expected_value=best_real.expected_value,
+                strategy="single_most_likely",
+                notes=[
+                    f"Option la plus probable: "
+                    f"{'PLUS de' if best_real.side == 'over' else 'MOINS de'} "
+                    f"(score={best_real.realization_score:.3f}, "
+                    f"P={best_real.blended_prob:.1%}).",
                 ],
             )
         )
 
     best_ev = max(pool, key=lambda e: (e.expected_value, e.blended_prob))
-    if best_ev.blended_prob >= min_joint_prob:
+    if (best_ev.match != best_real.match or best_ev.option != best_real.option) and (
+        best_ev.expected_value >= -0.01
+    ):
         collected.append(
             CombineTicket(
                 legs=[best_ev],
@@ -115,25 +124,7 @@ def build_combines(
                 combined_odds=best_ev.cote,
                 expected_value=best_ev.expected_value,
                 strategy="single_value",
-                notes=[
-                    "Meilleur événement isolé (probabilité ≥ 60% et EV ≥ 0).",
-                    "Utile si tu priorises la sureté avant le levier du combiné.",
-                ],
-            )
-        )
-
-    best_prob = max(pool, key=lambda e: (e.blended_prob, e.expected_value))
-    if best_prob.match != best_ev.match or best_prob.option != best_ev.option:
-        collected.append(
-            CombineTicket(
-                legs=[best_prob],
-                joint_probability=best_prob.blended_prob,
-                combined_odds=best_prob.cote,
-                expected_value=best_prob.expected_value,
-                strategy="single_highest_prob",
-                notes=[
-                    "Événement à plus haute probabilité estimée (≥ 60%).",
-                ],
+                notes=["Meilleur EV parmi les options déjà retenues (P≥60%)."],
             )
         )
 
@@ -149,13 +140,7 @@ def build_combines(
             ev = joint * c_odds - 1.0
             if ev < 0:
                 continue
-            notes = [
-                f"COMBINÉ multiplicatif — {k} matchs (indépendance approx.)",
-                f"P_jointe={joint:.1%} ≥ {min_joint_prob:.0%}",
-                f"Cote combinée ≈ {c_odds:.2f} | EV ≈ {ev:+.1%}",
-            ]
-            if len({c.market_type for c in combo}) > 1:
-                notes.append("Diversification Runs/Hits")
+            n_over = sum(1 for c in combo if c.side == "over")
             collected.append(
                 CombineTicket(
                     legs=list(combo),
@@ -163,11 +148,14 @@ def build_combines(
                     combined_odds=c_odds,
                     expected_value=ev,
                     strategy=f"parlay_{k}",
-                    notes=notes,
+                    notes=[
+                        f"COMBINÉ multiplicatif — {k} matchs (indépendance approx.)",
+                        f"P_jointe={joint:.1%} | {n_over}× PLUS / {k - n_over}× MOINS",
+                        f"Cote combinée ≈ {c_odds:.2f} | EV ≈ {ev:+.1%}",
+                    ],
                 )
             )
 
-    # Greedy parlay: stack highest-prob legs while joint stays >= threshold
     greedy_legs: list[ScoredEvent] = []
     greedy_p = 1.0
     for ev in sorted(pool, key=lambda e: e.blended_prob, reverse=True):
@@ -197,19 +185,18 @@ def build_combines(
 
     unique: list[CombineTicket] = []
     seen: set[tuple] = set()
-    # Prefer singles_card and value singles before low-quality parlays
     priority = {
         "singles_card": 0,
-        "single_value": 1,
-        "single_highest_prob": 2,
+        "single_most_likely": 1,
+        "single_value": 2,
         "greedy_high_prob": 3,
     }
     for ticket in sorted(
         collected,
         key=lambda x: (
             priority.get(x.strategy, 4),
-            -x.expected_value,
             -x.joint_probability,
+            -x.expected_value,
         ),
     ):
         key = _ticket_key(ticket) + (ticket.strategy,)
@@ -225,10 +212,10 @@ def build_combines(
 def summarize_for_display(tickets: list[CombineTicket]) -> str:
     if not tickets:
         return (
-            "Aucun combiné trouvé avec P(réalisation) ≥ 60% et EV ≥ 0.\n"
+            "Aucun événement trouvé avec P(réalisation) ≥ 60%.\n"
             "Assouplis le seuil, relance le scrape, ou élargis les marchés."
         )
-    lines = ["=== PROPOSITIONS (objectif profit, P ≥ 60%) ===", ""]
+    lines = ["=== PROPOSITIONS (PLUS de & MOINS de — plus probable retenu) ===", ""]
     for i, t in enumerate(tickets, 1):
         if t.strategy == "singles_card":
             lines.append(
@@ -241,9 +228,11 @@ def summarize_for_display(tickets: list[CombineTicket]) -> str:
                 f"cote={t.combined_odds:.2f} | EV={t.expected_value:+.1%}"
             )
         for leg in t.legs:
+            side = "PLUS" if leg.side == "over" else "MOINS"
             lines.append(
-                f"  - {leg.match} | {leg.market_type} {leg.option} @ {leg.cote:.2f} "
-                f"(p={leg.blended_prob:.1%}, EV={leg.expected_value:+.1%})"
+                f"  - {leg.match} | {leg.market_type} {leg.option} [{side}] "
+                f"@ {leg.cote:.2f} (p={leg.blended_prob:.1%}, "
+                f"score={leg.realization_score:.3f}, EV={leg.expected_value:+.1%})"
             )
         for note in t.notes:
             lines.append(f"    · {note}")

@@ -202,7 +202,10 @@ def analyze_odds(
             min_prob * 100,
         )
 
-    all_events.sort(key=lambda e: (e.expected_value, e.blended_prob), reverse=True)
+    all_events.sort(
+        key=lambda e: (e.realization_score, e.blended_prob, e.expected_value),
+        reverse=True,
+    )
     tickets = build_combines(
         all_events,
         min_joint_prob=min_joint_prob,
