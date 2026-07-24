@@ -1,0 +1,54 @@
+[
+  {
+    "match": "Kansas City Royals vs Detroit Tigers",
+    "date_heure": "2026-07-24T22:40Z",
+    "line": 8.5,
+    "prob": 1.0,
+    "sample_size": 6,
+    "under_count": 6,
+    "qualified": true,
+    "samples": [
+      7,
+      8,
+      8,
+      4,
+      7,
+      7
+    ],
+    "reason": "P(hits manches 1-5 < 8.5) = 100% (6/6)"
+  },
+  {
+    "match": "Los Angeles Dodgers vs New York Mets",
+    "date_heure": "2026-07-24T23:10Z",
+    "line": 8.5,
+    "prob": 0.8333,
+    "sample_size": 6,
+    "under_count": 5,
+    "qualified": true,
+    "samples": [
+      4,
+      5,
+      3,
+      8,
+      8,
+      13
+    ],
+    "reason": "P(hits manches 1-5 < 8.5) = 83% (5/6)"
+  },
+  {
+    "match": "New York Yankees vs Philadelphia Phillies",
+    "date_heure": "2026-07-24T22:45Z",
+    "line": 8.5,
+    "prob": 0.75,
+    "sample_size": 4,
+    "under_count": 3,
+    "qualified": true,
+    "samples": [
+      15,
+      5,
+      3,
+      5
+    ],
+    "reason": "P(hits manches 1-5 < 8.5) = 75% (3/4)"
+  }
+]

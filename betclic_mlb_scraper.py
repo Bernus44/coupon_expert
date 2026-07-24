@@ -3,7 +3,8 @@ import json
 import logging
 import os
 import random
-from datetime import datetime, timedelta
+import re
+from datetime import datetime, timedelta, timezone
 from playwright.async_api import async_playwright
 from playwright_stealth import Stealth
 
@@ -123,16 +124,9 @@ class BetclicMLBScraper:
                     if (teamElements.length >= 2) {
                         matchName = `${teamElements[0].innerText.trim()} vs ${teamElements[1].innerText.trim()}`;
                     } else {
+                         // Prefer raw slug; Python side resolves teams via known MLB dictionary
                          const slug = a.href.split('/').pop().split('-m')[0];
-                         const words = slug.split('-');
-                         if (words.length >= 2) {
-                             const mid = Math.floor(words.length / 2);
-                             const team1 = words.slice(0, mid).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                             const team2 = words.slice(mid).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                             matchName = `${team1} vs ${team2}`;
-                         } else {
-                             matchName = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                         }
+                         matchName = slug.replace(/-/g, ' ');
                     }
 
                     const text = container.innerText;
@@ -249,18 +243,32 @@ class BetclicMLBScraper:
 
                     title_lower = m['title'].lower()
                     market_type = None
-                    if "total runs" in title_lower or (title_lower == "runs" and not "manche" in title_lower and not "-" in title_lower):
+                    # Exclude team/inning props: keep only global game totals
+                    if any(x in title_lower for x in ("manche", "inning", "équipe", "equipe", "joueur", "1ère", "1ere", "5 premières")):
+                        continue
+                    if "total runs" in title_lower or title_lower.strip() in {"runs", "nombre de runs", "total de runs"}:
                         if "plus de" in m['option'].lower() or "moins de" in m['option'].lower() or "+ de" in m['option'].lower() or "- de" in m['option'].lower():
                             market_type = "Total Runs"
-                    elif ("hits" in title_lower or "nombre total de hits" in title_lower) and not "manche" in title_lower:
+                    elif ("hits" in title_lower or "nombre total de hits" in title_lower or "total hits" in title_lower) and "manche" not in title_lower:
                         market_type = "Total Hits"
 
                     if market_type:
                         cote = self.parse_french_odds(m['cote_raw'])
+                        option_text = m['option'] or ""
+                        if "&" in option_text or " et " in option_text.lower():
+                            continue
                         if cote >= 1.20:
+                            lm = re.search(r"(\d+[.,]\d+|\d+)", option_text)
+                            if lm:
+                                line_val = float(lm.group(1).replace(",", "."))
+                                if market_type == "Total Runs" and not (5.0 <= line_val <= 15.0):
+                                    continue
+                                if market_type == "Total Hits" and not (11.0 <= line_val <= 26.0):
+                                    continue
                             paris.append({
                                 "type": market_type,
-                                "option": m['option'],
+                                "option": option_text,
+                                "title": m.get("title") or "",
                                 "cote": cote
                             })
 
@@ -294,6 +302,7 @@ class BetclicMLBScraper:
 
                 return {
                     "match": match_info['name'],
+                    "url": url,
                     "date_heure": date_heure,
                     "paris": paris
                 }
@@ -305,8 +314,17 @@ class BetclicMLBScraper:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             context = await browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-                viewport={'width': 1280, 'height': 800}
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/125.0.0.0 Safari/537.36"
+                ),
+                viewport={"width": 1280, "height": 800},
+                locale="fr-FR",
+                timezone_id="Europe/Paris",
+                extra_http_headers={
+                    "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+                },
             )
             page = await context.new_page()
             await Stealth().apply_stealth_async(page)
@@ -319,10 +337,30 @@ class BetclicMLBScraper:
                         self.data.append(match_data)
 
                 os.makedirs("data", exist_ok=True)
-                with open("data/betclic_mlb.json", "w", encoding="utf-8") as f:
-                    json.dump(self.data, f, indent=2, ensure_ascii=False)
+                scraped_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                if not self.data:
+                    logger.error(
+                        "Aucun match extrait (blocage probable). "
+                        "Le fichier data/betclic_mlb.json n'est PAS écrasé."
+                    )
+                else:
+                    for row in self.data:
+                        row["scraped_at"] = scraped_at
+                        row.setdefault("source", "betclic")
+                    payload = {
+                        "scraped_at": scraped_at,
+                        "source": self.mlb_url,
+                        "match_count": len(self.data),
+                        "matches": self.data,
+                    }
+                    with open("data/betclic_mlb.json", "w", encoding="utf-8") as f:
+                        json.dump(payload, f, indent=2, ensure_ascii=False)
 
-                logger.info(f"Extraction terminée. {len(self.data)} matchs enregistrés dans data/betclic_mlb.json")
+                    logger.info(
+                        "Extraction terminée. %s matchs enregistrés dans data/betclic_mlb.json (scraped_at=%s)",
+                        len(self.data),
+                        scraped_at,
+                    )
 
             except Exception as e:
                 logger.error(f"Erreur globale : {e}")

@@ -1,0 +1,899 @@
+[
+  {
+    "match": "Colorado Rockies vs Milwaukee Brewers",
+    "date_heure": "2026-07-24T20:10Z",
+    "market_type": "Total Runs",
+    "side": "over",
+    "line": 8.5,
+    "option": "+ de 8,5",
+    "historical_prob": 0.6667,
+    "sample_size": 6,
+    "over_count": 4,
+    "under_count": 2,
+    "cote": 1.877,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 4/4 (100%) + momentum OK (runs_forme=9.0)",
+    "details": {
+      "values": [
+        7.0,
+        11.0,
+        4.0,
+        13.0,
+        13.0,
+        10.0
+      ],
+      "avg": 9.667,
+      "posture": {
+        "away_id": 115,
+        "home_id": 158,
+        "away": "Colorado Rockies",
+        "home": "Milwaukee Brewers",
+        "label": "Colorado Rockies @ Milwaukee Brewers"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 8.666666666666666,
+          "hits_allowed_pg": 11.0,
+          "runs_scored_pg": 4.833333333333333,
+          "runs_allowed_pg": 6.833333333333333,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 7.0,
+          "hits_allowed_pg": 7.833333333333333,
+          "runs_scored_pg": 4.166666666666667,
+          "runs_allowed_pg": 3.0,
+          "win_pct": 0.8333333333333334,
+          "games": 6
+        },
+        "combined_hits_pg": 15.667,
+        "combined_runs_pg": 9.0
+      }
+    }
+  },
+  {
+    "match": "Chicago Cubs vs Pittsburgh Pirates",
+    "date_heure": "2026-07-24T22:40Z",
+    "market_type": "Total Hits",
+    "side": "under",
+    "line": 18.5,
+    "option": "- de 18,5",
+    "historical_prob": 0.6667,
+    "sample_size": 6,
+    "over_count": 2,
+    "under_count": 4,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 3/3 (100%) + momentum OK (hits_forme=14.2)",
+    "details": {
+      "values": [
+        21.0,
+        27.0,
+        17.0,
+        16.0,
+        17.0,
+        12.0
+      ],
+      "avg": 18.333,
+      "posture": {
+        "away_id": 112,
+        "home_id": 134,
+        "away": "Chicago Cubs",
+        "home": "Pittsburgh Pirates",
+        "label": "Chicago Cubs @ Pittsburgh Pirates"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 8.166666666666666,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 5.666666666666667,
+          "runs_allowed_pg": 3.0,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 6.0,
+          "hits_allowed_pg": 6.666666666666667,
+          "runs_scored_pg": 3.3333333333333335,
+          "runs_allowed_pg": 3.1666666666666665,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "combined_hits_pg": 14.167,
+        "combined_runs_pg": 9.0
+      }
+    }
+  },
+  {
+    "match": "Chicago Cubs vs Pittsburgh Pirates",
+    "date_heure": "2026-07-24T22:40Z",
+    "market_type": "Total Runs",
+    "side": "over",
+    "line": 8.0,
+    "option": "+ de 8,0",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 5,
+    "under_count": 1,
+    "cote": 1.926,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 2/3 (67%) + momentum OK (runs_forme=9.0)",
+    "details": {
+      "values": [
+        14.0,
+        20.0,
+        15.0,
+        11.0,
+        16.0,
+        3.0
+      ],
+      "avg": 13.167,
+      "posture": {
+        "away_id": 112,
+        "home_id": 134,
+        "away": "Chicago Cubs",
+        "home": "Pittsburgh Pirates",
+        "label": "Chicago Cubs @ Pittsburgh Pirates"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 8.166666666666666,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 5.666666666666667,
+          "runs_allowed_pg": 3.0,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 6.0,
+          "hits_allowed_pg": 6.666666666666667,
+          "runs_scored_pg": 3.3333333333333335,
+          "runs_allowed_pg": 3.1666666666666665,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "combined_hits_pg": 14.167,
+        "combined_runs_pg": 9.0
+      }
+    }
+  },
+  {
+    "match": "Kansas City Royals vs Detroit Tigers",
+    "date_heure": "2026-07-24T22:40Z",
+    "market_type": "Total Hits",
+    "side": "under",
+    "line": 15.5,
+    "option": "- de 15,5",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 1,
+    "under_count": 5,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 3/4 (75%) + momentum OK (hits_forme=15.5)",
+    "details": {
+      "values": [
+        16.0,
+        12.0,
+        12.0,
+        15.0,
+        10.0,
+        13.0
+      ],
+      "avg": 13.0,
+      "posture": {
+        "away_id": 118,
+        "home_id": 116,
+        "away": "Kansas City Royals",
+        "home": "Detroit Tigers",
+        "label": "Kansas City Royals @ Detroit Tigers"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 8.5,
+          "hits_allowed_pg": 8.333333333333334,
+          "runs_scored_pg": 3.8333333333333335,
+          "runs_allowed_pg": 5.5,
+          "win_pct": 0.6666666666666666,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 7.0,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 3.5,
+          "runs_allowed_pg": 4.0,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "combined_hits_pg": 15.5,
+        "combined_runs_pg": 7.333
+      }
+    }
+  },
+  {
+    "match": "Kansas City Royals vs Detroit Tigers",
+    "date_heure": "2026-07-24T22:40Z",
+    "market_type": "Total Runs",
+    "side": "over",
+    "line": 7.5,
+    "option": "+ de 7,5",
+    "historical_prob": 0.6667,
+    "sample_size": 6,
+    "over_count": 4,
+    "under_count": 2,
+    "cote": 1.935,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 4/4 (100%) + momentum OK (runs_forme=7.3)",
+    "details": {
+      "values": [
+        10.0,
+        8.0,
+        8.0,
+        9.0,
+        3.0,
+        5.0
+      ],
+      "avg": 7.167,
+      "posture": {
+        "away_id": 118,
+        "home_id": 116,
+        "away": "Kansas City Royals",
+        "home": "Detroit Tigers",
+        "label": "Kansas City Royals @ Detroit Tigers"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 8.5,
+          "hits_allowed_pg": 8.333333333333334,
+          "runs_scored_pg": 3.8333333333333335,
+          "runs_allowed_pg": 5.5,
+          "win_pct": 0.6666666666666666,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 7.0,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 3.5,
+          "runs_allowed_pg": 4.0,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "combined_hits_pg": 15.5,
+        "combined_runs_pg": 7.333
+      }
+    }
+  },
+  {
+    "match": "Arizona Diamondbacks vs Washington Nationals",
+    "date_heure": "2026-07-24T22:45Z",
+    "market_type": "Total Hits",
+    "side": "over",
+    "line": 17.5,
+    "option": "+ de 17,5",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 5,
+    "under_count": 1,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 3/4 (75%) + momentum OK (hits_forme=21.3)",
+    "details": {
+      "values": [
+        0.0,
+        18.0,
+        22.0,
+        19.0,
+        25.0,
+        27.0
+      ],
+      "avg": 18.5,
+      "posture": {
+        "away_id": 109,
+        "home_id": 120,
+        "away": "Arizona Diamondbacks",
+        "home": "Washington Nationals",
+        "label": "Arizona Diamondbacks @ Washington Nationals"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 10.0,
+          "hits_allowed_pg": 10.0,
+          "runs_scored_pg": 6.833333333333333,
+          "runs_allowed_pg": 4.666666666666667,
+          "win_pct": 0.6666666666666666,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 11.333333333333334,
+          "hits_allowed_pg": 9.5,
+          "runs_scored_pg": 8.5,
+          "runs_allowed_pg": 5.333333333333333,
+          "win_pct": 0.6666666666666666,
+          "games": 6
+        },
+        "combined_hits_pg": 21.333,
+        "combined_runs_pg": 15.333
+      }
+    }
+  },
+  {
+    "match": "New York Yankees vs Philadelphia Phillies",
+    "date_heure": "2026-07-24T22:45Z",
+    "market_type": "Total Hits",
+    "side": "under",
+    "line": 14.5,
+    "option": "- de 14,5",
+    "historical_prob": 0.75,
+    "sample_size": 4,
+    "over_count": 1,
+    "under_count": 3,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 2/2 (100%) + momentum OK (hits_forme=13.5)",
+    "details": {
+      "values": [
+        21.0,
+        14.0,
+        9.0,
+        7.0
+      ],
+      "avg": 12.75,
+      "posture": {
+        "away_id": 147,
+        "home_id": 143,
+        "away": "New York Yankees",
+        "home": "Philadelphia Phillies",
+        "label": "New York Yankees @ Philadelphia Phillies"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 5.666666666666667,
+          "hits_allowed_pg": 5.5,
+          "runs_scored_pg": 2.8333333333333335,
+          "runs_allowed_pg": 3.1666666666666665,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 7.833333333333333,
+          "hits_allowed_pg": 8.666666666666666,
+          "runs_scored_pg": 4.0,
+          "runs_allowed_pg": 4.833333333333333,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "combined_hits_pg": 13.5,
+        "combined_runs_pg": 6.833
+      }
+    }
+  },
+  {
+    "match": "New York Yankees vs Philadelphia Phillies",
+    "date_heure": "2026-07-24T22:45Z",
+    "market_type": "Total Runs",
+    "side": "under",
+    "line": 7.5,
+    "option": "- de 7,5",
+    "historical_prob": 0.75,
+    "sample_size": 4,
+    "over_count": 1,
+    "under_count": 3,
+    "cote": 1.877,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 2/2 (100%) + momentum OK (runs_forme=6.8)",
+    "details": {
+      "values": [
+        12.0,
+        7.0,
+        3.0,
+        4.0
+      ],
+      "avg": 6.5,
+      "posture": {
+        "away_id": 147,
+        "home_id": 143,
+        "away": "New York Yankees",
+        "home": "Philadelphia Phillies",
+        "label": "New York Yankees @ Philadelphia Phillies"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 5.666666666666667,
+          "hits_allowed_pg": 5.5,
+          "runs_scored_pg": 2.8333333333333335,
+          "runs_allowed_pg": 3.1666666666666665,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 7.833333333333333,
+          "hits_allowed_pg": 8.666666666666666,
+          "runs_scored_pg": 4.0,
+          "runs_allowed_pg": 4.833333333333333,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "combined_hits_pg": 13.5,
+        "combined_runs_pg": 6.833
+      }
+    }
+  },
+  {
+    "match": "Atlanta Braves vs Baltimore Orioles",
+    "date_heure": "2026-07-24T23:05Z",
+    "market_type": "Total Hits",
+    "side": "under",
+    "line": 16.5,
+    "option": "- de 16,5",
+    "historical_prob": 0.6667,
+    "sample_size": 6,
+    "over_count": 2,
+    "under_count": 4,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 1/2 (50%) + momentum OK (hits_forme=12.2)",
+    "details": {
+      "values": [
+        18.0,
+        16.0,
+        19.0,
+        13.0,
+        9.0,
+        9.0
+      ],
+      "avg": 14.0,
+      "posture": {
+        "away_id": 144,
+        "home_id": 110,
+        "away": "Atlanta Braves",
+        "home": "Baltimore Orioles",
+        "label": "Atlanta Braves @ Baltimore Orioles"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 5.166666666666667,
+          "hits_allowed_pg": 6.166666666666667,
+          "runs_scored_pg": 3.1666666666666665,
+          "runs_allowed_pg": 3.5,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 7.0,
+          "hits_allowed_pg": 6.666666666666667,
+          "runs_scored_pg": 3.6666666666666665,
+          "runs_allowed_pg": 2.8333333333333335,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "combined_hits_pg": 12.167,
+        "combined_runs_pg": 6.833
+      }
+    }
+  },
+  {
+    "match": "Cleveland Guardians vs Tampa Bay Rays",
+    "date_heure": "2026-07-24T23:10Z",
+    "market_type": "Total Hits",
+    "side": "over",
+    "line": 17.5,
+    "option": "+ de 17,5",
+    "historical_prob": 0.6667,
+    "sample_size": 6,
+    "over_count": 4,
+    "under_count": 2,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 2/3 (67%) + momentum OK (hits_forme=19.0)",
+    "details": {
+      "values": [
+        18.0,
+        23.0,
+        13.0,
+        23.0,
+        25.0,
+        17.0
+      ],
+      "avg": 19.833,
+      "posture": {
+        "away_id": 114,
+        "home_id": 139,
+        "away": "Cleveland Guardians",
+        "home": "Tampa Bay Rays",
+        "label": "Cleveland Guardians @ Tampa Bay Rays"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 8.5,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 4.333333333333333,
+          "runs_allowed_pg": 4.333333333333333,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 10.5,
+          "hits_allowed_pg": 6.333333333333333,
+          "runs_scored_pg": 5.166666666666667,
+          "runs_allowed_pg": 3.5,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "combined_hits_pg": 19.0,
+        "combined_runs_pg": 9.5
+      }
+    }
+  },
+  {
+    "match": "Cleveland Guardians vs Tampa Bay Rays",
+    "date_heure": "2026-07-24T23:10Z",
+    "market_type": "Total Runs",
+    "side": "over",
+    "line": 7.5,
+    "option": "+ de 7,5",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 5,
+    "under_count": 1,
+    "cote": 2.01,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 3/3 (100%) + momentum OK (runs_forme=9.5)",
+    "details": {
+      "values": [
+        8.0,
+        13.0,
+        5.0,
+        11.0,
+        11.0,
+        17.0
+      ],
+      "avg": 10.833,
+      "posture": {
+        "away_id": 114,
+        "home_id": 139,
+        "away": "Cleveland Guardians",
+        "home": "Tampa Bay Rays",
+        "label": "Cleveland Guardians @ Tampa Bay Rays"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 8.5,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 4.333333333333333,
+          "runs_allowed_pg": 4.333333333333333,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 10.5,
+          "hits_allowed_pg": 6.333333333333333,
+          "runs_scored_pg": 5.166666666666667,
+          "runs_allowed_pg": 3.5,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "combined_hits_pg": 19.0,
+        "combined_runs_pg": 9.5
+      }
+    }
+  },
+  {
+    "match": "Los Angeles Dodgers vs New York Mets",
+    "date_heure": "2026-07-24T23:10Z",
+    "market_type": "Total Hits",
+    "side": "under",
+    "line": 16.5,
+    "option": "- de 16,5",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 1,
+    "under_count": 5,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 3/3 (100%) + momentum OK (hits_forme=15.5)",
+    "details": {
+      "values": [
+        10.0,
+        14.0,
+        8.0,
+        16.0,
+        13.0,
+        23.0
+      ],
+      "avg": 14.0,
+      "posture": {
+        "away_id": 119,
+        "home_id": 121,
+        "away": "Los Angeles Dodgers",
+        "home": "New York Mets",
+        "label": "Los Angeles Dodgers @ New York Mets"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 7.0,
+          "hits_allowed_pg": 6.166666666666667,
+          "runs_scored_pg": 4.5,
+          "runs_allowed_pg": 3.3333333333333335,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 8.5,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 3.5,
+          "runs_allowed_pg": 3.3333333333333335,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "combined_hits_pg": 15.5,
+        "combined_runs_pg": 8.0
+      }
+    }
+  },
+  {
+    "match": "Los Angeles Dodgers vs New York Mets",
+    "date_heure": "2026-07-24T23:10Z",
+    "market_type": "Total Runs",
+    "side": "under",
+    "line": 9.0,
+    "option": "- de 9,0",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 1,
+    "under_count": 5,
+    "cote": 1.926,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 3/3 (100%) + momentum OK (runs_forme=8.0)",
+    "details": {
+      "values": [
+        3.0,
+        6.0,
+        6.0,
+        8.0,
+        5.0,
+        14.0
+      ],
+      "avg": 7.0,
+      "posture": {
+        "away_id": 119,
+        "home_id": 121,
+        "away": "Los Angeles Dodgers",
+        "home": "New York Mets",
+        "label": "Los Angeles Dodgers @ New York Mets"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 7.0,
+          "hits_allowed_pg": 6.166666666666667,
+          "runs_scored_pg": 4.5,
+          "runs_allowed_pg": 3.3333333333333335,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 8.5,
+          "hits_allowed_pg": 7.333333333333333,
+          "runs_scored_pg": 3.5,
+          "runs_allowed_pg": 3.3333333333333335,
+          "win_pct": 0.5,
+          "games": 6
+        },
+        "combined_hits_pg": 15.5,
+        "combined_runs_pg": 8.0
+      }
+    }
+  },
+  {
+    "match": "Toronto Blue Jays vs Boston Red Sox",
+    "date_heure": "2026-07-24T23:15Z",
+    "market_type": "Total Hits",
+    "side": "under",
+    "line": 16.5,
+    "option": "- de 16,5",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 1,
+    "under_count": 5,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 1/2 (50%) + momentum OK (hits_forme=11.0)",
+    "details": {
+      "values": [
+        10.0,
+        13.0,
+        16.0,
+        13.0,
+        9.0,
+        24.0
+      ],
+      "avg": 14.167,
+      "posture": {
+        "away_id": 141,
+        "home_id": 111,
+        "away": "Toronto Blue Jays",
+        "home": "Boston Red Sox",
+        "label": "Toronto Blue Jays @ Boston Red Sox"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 5.0,
+          "hits_allowed_pg": 8.5,
+          "runs_scored_pg": 1.3333333333333333,
+          "runs_allowed_pg": 4.5,
+          "win_pct": 0.16666666666666666,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 6.0,
+          "hits_allowed_pg": 8.166666666666666,
+          "runs_scored_pg": 4.333333333333333,
+          "runs_allowed_pg": 3.3333333333333335,
+          "win_pct": 0.6666666666666666,
+          "games": 6
+        },
+        "combined_hits_pg": 11.0,
+        "combined_runs_pg": 5.667
+      }
+    }
+  },
+  {
+    "match": "Toronto Blue Jays vs Boston Red Sox",
+    "date_heure": "2026-07-24T23:15Z",
+    "market_type": "Total Runs",
+    "side": "under",
+    "line": 8.5,
+    "option": "- de 8,5",
+    "historical_prob": 0.8333,
+    "sample_size": 6,
+    "over_count": 1,
+    "under_count": 5,
+    "cote": 1.826,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 1/2 (50%) + momentum OK (runs_forme=5.7)",
+    "details": {
+      "values": [
+        6.0,
+        4.0,
+        5.0,
+        7.0,
+        3.0,
+        14.0
+      ],
+      "avg": 6.5,
+      "posture": {
+        "away_id": 141,
+        "home_id": 111,
+        "away": "Toronto Blue Jays",
+        "home": "Boston Red Sox",
+        "label": "Toronto Blue Jays @ Boston Red Sox"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 5.0,
+          "hits_allowed_pg": 8.5,
+          "runs_scored_pg": 1.3333333333333333,
+          "runs_allowed_pg": 4.5,
+          "win_pct": 0.16666666666666666,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 6.0,
+          "hits_allowed_pg": 8.166666666666666,
+          "runs_scored_pg": 4.333333333333333,
+          "runs_allowed_pg": 3.3333333333333335,
+          "win_pct": 0.6666666666666666,
+          "games": 6
+        },
+        "combined_hits_pg": 11.0,
+        "combined_runs_pg": 5.667
+      }
+    }
+  },
+  {
+    "match": "Athletics vs Minnesota Twins",
+    "date_heure": "2026-07-25T00:10Z",
+    "market_type": "Total Hits",
+    "side": "over",
+    "line": 15.5,
+    "option": "+ de 15,5",
+    "historical_prob": 0.6667,
+    "sample_size": 6,
+    "over_count": 4,
+    "under_count": 2,
+    "cote": null,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 2/3 (67%) + momentum OK (hits_forme=19.3)",
+    "details": {
+      "values": [
+        8.0,
+        22.0,
+        16.0,
+        13.0,
+        21.0,
+        17.0
+      ],
+      "avg": 16.167,
+      "posture": {
+        "away_id": 133,
+        "home_id": 142,
+        "away": "Athletics",
+        "home": "Minnesota Twins",
+        "label": "Athletics @ Minnesota Twins"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 11.166666666666666,
+          "hits_allowed_pg": 11.0,
+          "runs_scored_pg": 6.0,
+          "runs_allowed_pg": 8.666666666666666,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 8.166666666666666,
+          "hits_allowed_pg": 11.166666666666666,
+          "runs_scored_pg": 3.6666666666666665,
+          "runs_allowed_pg": 6.833333333333333,
+          "win_pct": 0.3333333333333333,
+          "games": 6
+        },
+        "combined_hits_pg": 19.333,
+        "combined_runs_pg": 9.667
+      }
+    }
+  },
+  {
+    "match": "Cincinnati Reds vs St. Louis Cardinals",
+    "date_heure": "2026-07-25T00:15Z",
+    "market_type": "Total Runs",
+    "side": "over",
+    "line": 8.0,
+    "option": "+ de 8,0",
+    "historical_prob": 0.6,
+    "sample_size": 5,
+    "over_count": 3,
+    "under_count": 2,
+    "cote": 1.917,
+    "kept_after_posture": true,
+    "posture_reason": "même domicile: option réalisée 2/3 (67%) + momentum OK (runs_forme=7.5)",
+    "details": {
+      "values": [
+        7.0,
+        21.0,
+        21.0,
+        8.0,
+        7.0,
+        13.0
+      ],
+      "avg": 12.833,
+      "posture": {
+        "away_id": 113,
+        "home_id": 138,
+        "away": "Cincinnati Reds",
+        "home": "St. Louis Cardinals",
+        "label": "Cincinnati Reds @ St. Louis Cardinals"
+      },
+      "momentum": {
+        "away": {
+          "hits_pg": 7.666666666666667,
+          "hits_allowed_pg": 9.0,
+          "runs_scored_pg": 4.666666666666667,
+          "runs_allowed_pg": 5.166666666666667,
+          "win_pct": 0.6666666666666666,
+          "games": 6
+        },
+        "home": {
+          "hits_pg": 6.666666666666667,
+          "hits_allowed_pg": 8.166666666666666,
+          "runs_scored_pg": 2.8333333333333335,
+          "runs_allowed_pg": 4.333333333333333,
+          "win_pct": 0.16666666666666666,
+          "games": 6
+        },
+        "combined_hits_pg": 14.333,
+        "combined_runs_pg": 7.5
+      }
+    }
+  }
+]
