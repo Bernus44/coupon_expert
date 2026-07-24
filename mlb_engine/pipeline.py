@@ -229,38 +229,30 @@ def analyze_odds(
     }
 
 
-def save_report(report: dict[str, Any], out_dir: Path = DEFAULT_OUT_DIR) -> dict[str, Path]:
+def save_procedure_report(report: dict[str, Any], out_dir: Path = DEFAULT_OUT_DIR) -> dict[str, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
-    full_path = out_dir / "analysis_report.json"
-    combines_path = out_dir / "recommended_combines.json"
-    events_path = out_dir / "qualified_events.json"
+    full_path = out_dir / "procedure_report.json"
+    kept_path = out_dir / "kept_events.json"
+    f5_path = out_dir / "f5_under_8_5.json"
     text_path = out_dir / "recommended_combines.txt"
+    # Keep legacy filename for the human summary
+    summary_path = out_dir / "procedure_summary.txt"
 
     with full_path.open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
-
-    with combines_path.open("w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "generated_at": report["generated_at"],
-                "params": report["params"],
-                "combines": report["combines"],
-            },
-            f,
-            indent=2,
-            ensure_ascii=False,
-        )
-
-    with events_path.open("w", encoding="utf-8") as f:
-        json.dump(report["qualified_events"], f, indent=2, ensure_ascii=False)
-
+    with kept_path.open("w", encoding="utf-8") as f:
+        json.dump(report.get("kept_events") or [], f, indent=2, ensure_ascii=False)
+    with f5_path.open("w", encoding="utf-8") as f:
+        json.dump(report.get("f5_under_8_5_list") or [], f, indent=2, ensure_ascii=False)
     text_path.write_text(report["display"], encoding="utf-8")
+    summary_path.write_text(report["display"], encoding="utf-8")
 
     return {
         "report": full_path,
-        "combines": combines_path,
-        "events": events_path,
+        "kept": kept_path,
+        "f5": f5_path,
         "text": text_path,
+        "summary": summary_path,
     }
 
 
@@ -273,6 +265,7 @@ async def run_pipeline(
     max_legs: int = 4,
     max_age_hours: float = DEFAULT_MAX_AGE_HOURS,
     cached_only: bool = False,
+    legacy_engine: bool = False,
 ) -> dict[str, Any]:
     path = await maybe_scrape(
         force=scrape,
@@ -289,14 +282,29 @@ async def run_pipeline(
     for row in odds:
         logger.info("  · %s | %s", row.get("date_heure"), row.get("match"))
 
-    report = analyze_odds(
-        odds,
-        min_prob=min_prob,
-        min_joint_prob=min_joint_prob,
-        max_legs=max_legs,
-    )
-    paths = save_report(report, out_dir=out_dir)
+    if legacy_engine:
+        report = analyze_odds(
+            odds,
+            min_prob=min_prob,
+            min_joint_prob=min_joint_prob,
+            max_legs=max_legs,
+        )
+        paths = save_report(report, out_dir=out_dir)
+        report["output_paths"] = {k: str(v) for k, v in paths.items()}
+        logger.info("Rapport legacy écrit: %s", paths["combines"])
+        print(report["display"])
+        return report
+
+    from .simple_procedure import analyze_slate
+
+    report = analyze_slate(odds)
+    paths = save_procedure_report(report, out_dir=out_dir)
     report["output_paths"] = {k: str(v) for k, v in paths.items()}
-    logger.info("Rapport écrit: %s", paths["combines"])
+    logger.info(
+        "Procédure simple: %d événements retenus | %d bonus F5",
+        len(report.get("kept_events") or []),
+        len(report.get("f5_under_8_5_list") or []),
+    )
+    logger.info("Rapport écrit: %s", paths["text"])
     print(report["display"])
     return report

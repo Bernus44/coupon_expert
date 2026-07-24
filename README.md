@@ -38,7 +38,7 @@ export PATH="$HOME/.local/bin:$PATH"
 ## Usage
 
 ```bash
-# Analyse — rescrape AUTO si les cotes ne sont pas à jour (recommandé)
+# Procédure simple (H2H 6 matchs → posture/momentum → bonus F5)
 python3 main.py
 
 # Force un nouveau scrape même si le cache est récent
@@ -47,6 +47,14 @@ python3 main.py --scrape -v
 # Utiliser uniquement le cache local (même obsolète)
 python3 main.py --cached
 ```
+
+### Procédure d'analyse
+
+1. **6 dernières confrontations H2H** — totaux hits & runs → option PLUS/MOINS la plus fréquente  
+2. **Posture + momentum** — ne garder l'option que si la même configuration domicile et la forme récente l'ont historiquement favorisée  
+3. **Bonus** — liste des matchs avec **P(hits manches 1–5 < 8,5) ≥ 70%**
+
+Sorties : `data/kept_events.json`, `data/f5_under_8_5.json`, `data/procedure_summary.txt`
 
 Sorties dans `data/` :
 

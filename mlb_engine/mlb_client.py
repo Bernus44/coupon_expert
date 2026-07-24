@@ -222,6 +222,7 @@ class MLBClient:
                 meetings.append(
                     {
                         "date": game.get("officialDate"),
+                        "game_pk": game.get("gamePk"),
                         "venue": (game.get("venue") or {}).get("name"),
                         "away_id": away["team"]["id"],
                         "home_id": home["team"]["id"],

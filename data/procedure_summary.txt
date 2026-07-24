@@ -1,0 +1,25 @@
+=== PROCÉDURE SIMPLE — ÉVÉNEMENTS RETENUS ===
+
+1. Colorado Rockies vs Milwaukee Brewers | Total Runs + de 8,5 [PLUS] @ 1.88 | P_H2H=67% (4 over / 2 under) | même domicile: option réalisée 4/4 (100%) + momentum OK (runs_forme=9.0)
+2. Chicago Cubs vs Pittsburgh Pirates | Total Hits - de 18,5 [MOINS] | P_H2H=67% (2 over / 4 under) | même domicile: option réalisée 3/3 (100%) + momentum OK (hits_forme=14.2)
+3. Chicago Cubs vs Pittsburgh Pirates | Total Runs + de 8,0 [PLUS] @ 1.93 | P_H2H=83% (5 over / 1 under) | même domicile: option réalisée 2/3 (67%) + momentum OK (runs_forme=9.0)
+4. Kansas City Royals vs Detroit Tigers | Total Hits - de 15,5 [MOINS] | P_H2H=83% (1 over / 5 under) | même domicile: option réalisée 3/4 (75%) + momentum OK (hits_forme=15.5)
+5. Kansas City Royals vs Detroit Tigers | Total Runs + de 7,5 [PLUS] @ 1.94 | P_H2H=67% (4 over / 2 under) | même domicile: option réalisée 4/4 (100%) + momentum OK (runs_forme=7.3)
+6. Arizona Diamondbacks vs Washington Nationals | Total Hits + de 17,5 [PLUS] | P_H2H=83% (5 over / 1 under) | même domicile: option réalisée 3/4 (75%) + momentum OK (hits_forme=21.3)
+7. New York Yankees vs Philadelphia Phillies | Total Hits - de 14,5 [MOINS] | P_H2H=75% (1 over / 3 under) | même domicile: option réalisée 2/2 (100%) + momentum OK (hits_forme=13.5)
+8. New York Yankees vs Philadelphia Phillies | Total Runs - de 7,5 [MOINS] @ 1.88 | P_H2H=75% (1 over / 3 under) | même domicile: option réalisée 2/2 (100%) + momentum OK (runs_forme=6.8)
+9. Atlanta Braves vs Baltimore Orioles | Total Hits - de 16,5 [MOINS] | P_H2H=67% (2 over / 4 under) | même domicile: option réalisée 1/2 (50%) + momentum OK (hits_forme=12.2)
+10. Cleveland Guardians vs Tampa Bay Rays | Total Hits + de 17,5 [PLUS] | P_H2H=67% (4 over / 2 under) | même domicile: option réalisée 2/3 (67%) + momentum OK (hits_forme=19.0)
+11. Cleveland Guardians vs Tampa Bay Rays | Total Runs + de 7,5 [PLUS] @ 2.01 | P_H2H=83% (5 over / 1 under) | même domicile: option réalisée 3/3 (100%) + momentum OK (runs_forme=9.5)
+12. Los Angeles Dodgers vs New York Mets | Total Hits - de 16,5 [MOINS] | P_H2H=83% (1 over / 5 under) | même domicile: option réalisée 3/3 (100%) + momentum OK (hits_forme=15.5)
+13. Los Angeles Dodgers vs New York Mets | Total Runs - de 9,0 [MOINS] @ 1.93 | P_H2H=83% (1 over / 5 under) | même domicile: option réalisée 3/3 (100%) + momentum OK (runs_forme=8.0)
+14. Toronto Blue Jays vs Boston Red Sox | Total Hits - de 16,5 [MOINS] | P_H2H=83% (1 over / 5 under) | même domicile: option réalisée 1/2 (50%) + momentum OK (hits_forme=11.0)
+15. Toronto Blue Jays vs Boston Red Sox | Total Runs - de 8,5 [MOINS] @ 1.83 | P_H2H=83% (1 over / 5 under) | même domicile: option réalisée 1/2 (50%) + momentum OK (runs_forme=5.7)
+16. Athletics vs Minnesota Twins | Total Hits + de 15,5 [PLUS] | P_H2H=67% (4 over / 2 under) | même domicile: option réalisée 2/3 (67%) + momentum OK (hits_forme=19.3)
+17. Cincinnati Reds vs St. Louis Cardinals | Total Runs + de 8,0 [PLUS] @ 1.92 | P_H2H=60% (3 over / 2 under) | même domicile: option réalisée 2/3 (67%) + momentum OK (runs_forme=7.5)
+
+=== BONUS — MOINS DE 8,5 HITS (MANCHES 1 à 5) P≥70% ===
+
+1. Kansas City Royals vs Detroit Tigers | P=100% (6/6) — P(hits manches 1-5 < 8.5) = 100% (6/6)
+2. Los Angeles Dodgers vs New York Mets | P=83% (5/6) — P(hits manches 1-5 < 8.5) = 83% (5/6)
+3. New York Yankees vs Philadelphia Phillies | P=75% (3/4) — P(hits manches 1-5 < 8.5) = 75% (3/4)

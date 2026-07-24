@@ -73,6 +73,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Nombre max de sélections dans un combiné",
     )
     p.add_argument(
+        "--legacy-engine",
+        action="store_true",
+        help="Utiliser l'ancien moteur Poisson/EV au lieu de la procédure H2H simple",
+    )
+    p.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -101,6 +106,7 @@ def main(argv: list[str] | None = None) -> int:
                 max_legs=args.max_legs,
                 max_age_hours=args.max_age_hours,
                 cached_only=args.cached,
+                legacy_engine=args.legacy_engine,
             )
         )
     except Exception as exc:
